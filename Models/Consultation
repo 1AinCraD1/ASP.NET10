@@ -1,0 +1,22 @@
+using System;
+using System.ComponentModel.DataAnnotations;
+
+namespace MyApp.Models
+{
+    public class Consultation
+    {
+        [Required(ErrorMessage = "Ім'я та прізвище є обов'язковим")]
+        public string FullName { get; set; }
+
+        [Required(ErrorMessage = "Email є обов'язковим")]
+        [EmailAddress(ErrorMessage = "Невірний формат Email")]
+        public string Email { get; set; }
+
+        [Required(ErrorMessage = "Дата консультації є обов'язковою")]
+        [DataType(DataType.Date)]
+        public DateTime DesiredDate { get; set; }
+
+        [Required(ErrorMessage = "Будь ласка, виберіть продукт")]
+        public string Product { get; set; }
+    }
+}
