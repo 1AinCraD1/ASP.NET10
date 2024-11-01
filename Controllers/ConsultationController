@@ -1,0 +1,61 @@
+using Microsoft.AspNetCore.Mvc;
+using MyApp.Models;
+using System;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
+
+namespace MyApp.Controllers
+{
+    public class ConsultationController : Controller
+    {
+        public IActionResult Register()
+        {
+            ViewBag.Products = new List<string> { "JavaScript", "C#", "Java", "Python", "Основи" };
+            return View(new Consultation());
+        }
+
+        [HttpPost]
+        public IActionResult Register(Consultation model)
+        {
+            if (model.DesiredDate < DateTime.Today)
+            {
+                ModelState.AddModelError("DesiredDate", "Дата консультації повинна бути в майбутньому.");
+            }
+            else if (model.DesiredDate.DayOfWeek == DayOfWeek.Saturday || model.DesiredDate.DayOfWeek == DayOfWeek.Sunday)
+            {
+                ModelState.AddModelError("DesiredDate", "Дата консультації не може бути на вихідні.");
+            }
+
+            if (model.Product == "Основи" && model.DesiredDate.DayOfWeek == DayOfWeek.Monday)
+            {
+                ModelState.AddModelError("Product", "Консультація з продукту 'Основи' не може проходити по понеділках.");
+            }
+
+            if (!string.IsNullOrWhiteSpace(model.Email))
+            {
+                var gmailRegex = new Regex(@"^[^@\s]+@gmail\.com$", RegexOptions.IgnoreCase);
+                if (!gmailRegex.IsMatch(model.Email))
+                {
+                    ModelState.AddModelError("Email", "Email повинен бути у форматі *@gmail.com");
+                }
+            }
+            else
+            {
+                ModelState.AddModelError("Email", "Email є обов'язковим");
+            }
+
+            if (ModelState.IsValid)
+            {
+                return RedirectToAction("Success");
+            }
+
+            ViewBag.Products = new List<string> { "JavaScript", "C#", "Java", "Python", "Основи" };
+            return View(model);
+        }
+
+        public IActionResult Success()
+        {
+            return View();
+        }
+    }
+}
